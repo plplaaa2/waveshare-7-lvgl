@@ -93,3 +93,6 @@ substitutions:
   KBSHappyFM: "http://yourip:3005/radio?keys=kbs_happy&token=homeassistant&atype=1"
   SBSPowerFM: "http://yourip:3005/radio?keys=sbs_power&token=homeassistant&atype=1"
 ```
+
+## 후원
+[![ko-fi](https://ko-fi.com/img/githubbutton_sm.svg)](https://ko-fi.com/plplaaa2)
