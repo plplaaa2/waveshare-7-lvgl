@@ -1,63 +1,26 @@
 display:
-  - platform: rpi_dpi_rgb
+  - platform: mipi_rgb
     id: my_display
+    model: ESP32-S3-TOUCH-LCD-7-800X480
     auto_clear_enabled: false
     update_interval: never
     color_order: RGB
-    pclk_frequency: 14MHz
-    dimensions:
-      width: 800
-      height: 480
-    de_pin:
-      number: 5
-    hsync_pin:
-      number: 46
-      ignore_strapping_warning: true
-    vsync_pin:
-      number: 3
-      ignore_strapping_warning: true
-    pclk_pin: 7
-    pclk_inverted: false
-    hsync_back_porch: 10 #30
-    hsync_front_porch: 20 #210 
-    hsync_pulse_width: 10 #30
-    vsync_back_porch: 10 #4
-    vsync_front_porch: 10 #4
-    vsync_pulse_width: 10 #4
-    data_pins:
-      red:
-        - 1         #r3
-        - 2         #r4
-        - 42        #r5
-        - 41        #r6
-        - 40        #r7
-      blue:
-        - 14        #b3
-        - 38        #b4
-        - 18        #b5
-        - 17        #b6
-        - 10        #b7
-      green:
-        - 39        #g2
-        - 0         #g3
-        - 45        #g4
-        - 48        #g5
-        - 47        #g6
-        - 21        #g7
-# 터치 스크린 설정
+
+ch422g:
+  id: ch422g_hub
+
 touchscreen:
   platform: gt911
   id: my_touchscreen
   interrupt_pin: GPIO4
+  reset_pin: 
+    ch422g: ch422g_hub
+    number: 1
   on_touch:
     - lambda: |-
-          ESP_LOGI("cal", "x=%d, y=%d, x_raw=%d, y_raw=%0d",
-              touch.x,
-              touch.y,
-              touch.x_raw,
-              touch.y_raw
-              );
-    - script.execute: light_up
+        if (!id(backlight).remote_values.is_on()) {
+        id(light_up).execute();
+        }
 
 i2c:
   scl: GPIO9
@@ -109,30 +72,25 @@ script:
     then:
       - if:
           condition:
-              - switch.is_off: auto_brightness
+            and:
+              - switch.is_off: auto_brightness              
           then:
             - light.turn_on: 
                 id: backlight
                 brightness: !lambda return id(backlight_brightness).state / 100;
           else:
-            - if:
-               condition:
-                 lambda: return id(lux_sensor).state >= 600;
-               then:
-                 - light.turn_on: 
-                      id: backlight
-                      brightness: 1
-            - if:
-               condition:
-                 lambda: return id(lux_sensor).state >= 100;
-               then:
-                 - light.turn_on: 
-                      id: backlight
-                      brightness: 0.5
-            - if:
-               condition:
-                 lambda: return id(lux_sensor).state >= 0;
-               then:
-                 - light.turn_on: 
-                      id: backlight
-                      brightness: 0.3      
+            - light.turn_on:
+                id: backlight
+                brightness: !lambda |-
+                  if (id(lux_sensor).state >= 500) {
+                    return 1.0;
+                  }
+                  else if (id(lux_sensor).state >= 300) {
+                    return 0.7;
+                  }
+                  else if (id(lux_sensor).state >= 100) {
+                    return 0.5;
+                  }
+                  else {
+                    return 0.3;
+                  }
