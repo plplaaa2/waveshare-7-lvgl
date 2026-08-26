@@ -50,42 +50,41 @@ substitutions:
   KBSHappyFM: "http://yourip:3005/radio?keys=kbs_happy&token=homeassistant&atype=1"
   SBSPowerFM: "http://yourip:3005/radio?keys=sbs_power&token=homeassistant&atype=1"
 
-esphome:
-  name: "${name}"
-  comment: "${comment}"
-  platformio_options:
-    board_build.arduino.memory_type: qio_opi
-    board_build.flash_mode: dio
-
-  on_boot: 
-    then:
-      - script.execute: light_up
-        
 esp32:
-  board: ${board}
-  flash_size: 8MB
+  board: esp32-s3-devkitc-1
+  flash_size: 8MB  
+  cpu_frequency: 240MHz
   framework:
     type: esp-idf  
-    #version: 4.4.8
-    #platform_version: 5.4.0
     sdkconfig_options:
-      COMPILER_OPTIMIZATION_SIZE: "y"
-      CONFIG_ESP32S3_DEFAULT_CPU_FREQ_240: "y"
+       # 1. FreeRTOS 메인 타스크 스택 크기 확장 (기본 8192 -> 16384 Bytes)
+      CONFIG_ESP_MAIN_TASK_STACK_SIZE: "16384"
+      CONFIG_FREERTOS_TIMER_TASK_STACK_DEPTH: "4096"
+      # 1. PSRAM Malloc & Cache 최적화
+      CONFIG_SPIRAM_USE_MALLOC: "y"
+      CONFIG_SPIRAM_MALLOC_ALWAYSINTERNAL: "1024"
+      CONFIG_SPIRAM_MALLOC_RESERVE_INTERNAL: "37268"           
       CONFIG_ESP32S3_DATA_CACHE_64KB: "y"
       CONFIG_ESP32S3_DATA_CACHE_LINE_64B: "y"
+      # 2. 코드 / 데이터 PSRAM 맵핑
       CONFIG_SPIRAM_FETCH_INSTRUCTIONS: "y"
       CONFIG_SPIRAM_RODATA: "y"
-    advanced:
-      enable_idf_experimental_features: true
+      CONFIG_SPIRAM_TRY_ALLOCATE_MEM_WITH_ESP_MEMMALLOC: "y"
+#      CONFIG_ESP_WIFI_MALLOC_PSRAM: "y"
+      # 5. 불필요한 스택 제거
+      CONFIG_BT_ENABLED: "n"
+      CONFIG_BLUEDROID_ENABLED: "n"
+      
 
 psram:
   mode: octal
-  speed: 120MHz
+  speed: 80MHz
 
 # Enable logging
 logger:
   level: INFO
-  #baud_rate: 0
+  logs:
+    sensor: WARN  # 센서의 값 변화 로그만 완전히 차단
 
 # Enable Home Assistant API
 api:
