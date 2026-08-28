@@ -287,32 +287,37 @@ script:
 # weather on/off
   - id: show_weather
     then:
-      - lvgl.widget.show: weather_card
-      - lvgl.widget.show: air_quality_card
-      - lvgl.widget.show: temp_card
+      - lvgl.widget.show: [weather_card, air_quality_card, temp_card]
       - script.execute: weather_img
+      
   - id: hide_weather
     then:
-      - lvgl.image.update:
-          id: home_weather_icon
-          src: blank
-      - if:
-          condition:            
-              - switch.is_on: climate_sw              
-          then:
-              - lvgl.widget.hide: weather_card
-              - lvgl.widget.hide: air_quality_card
-          else:
-              - lvgl.widget.hide: weather_card
-              - lvgl.widget.hide: air_quality_card
-              - lvgl.widget.hide: temp_card
-  - id: hide_all_card 
+      - lambda: |-
+          // 1. 이미지 소스 변경 (ESPHome image 객체를 LVGL image로 변환하여 적용)
+          lv_image_set_src(id(home_weather_icon), &blank);
+
+          // 2. 스위치 ON 상태 조건 검사
+          bool any_on = id(climate_sw).state || id(boiler_sw).state;
+
+          // 3. LVGL Native API로 위젯 숨기기/보이기 (LV_OBJ_FLAG_HIDDEN)
+          lv_obj_add_flag(id(weather_card), LV_OBJ_FLAG_HIDDEN);
+          lv_obj_add_flag(id(air_quality_card), LV_OBJ_FLAG_HIDDEN);
+
+          if (!any_on) {
+            lv_obj_add_flag(id(temp_card), LV_OBJ_FLAG_HIDDEN);
+          } else {
+            lv_obj_remove_flag(id(temp_card), LV_OBJ_FLAG_HIDDEN);
+          }
+  - id: hide_all_card
     then:
-      - switch.turn_off: climate_sw      
-      - switch.turn_off: blind_sw
-      - switch.turn_off: radio_sw      
-      - switch.turn_off: energy_sw
-      - switch.turn_off: setting_sw
+      - lambda: |-
+          id(climate_sw).turn_off();
+          id(boiler_sw).turn_off();
+          id(blind_sw).turn_off();
+          id(radio_sw).turn_off();
+          id(security_sw).turn_off();
+          id(energy_sw).turn_off();
+          id(setting_sw).turn_off();
 
 # radio selector, If you want to edit channel names,
 select:
