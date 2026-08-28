@@ -1,5 +1,7 @@
 # ESPhome Craft LVGL 800
 
+## refactoring for ESPhome LVGL 9 26.8
+
 **Dashboard for waveshare ESP32 S3 N8R8 LCD 7 and Guition ESP32 8048S070**
 
 ![image](https://github.com/user-attachments/assets/a9315adf-f3ac-48d0-a87d-aa4b253453d7)
