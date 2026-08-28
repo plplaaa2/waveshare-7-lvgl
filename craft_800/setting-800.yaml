@@ -28,10 +28,6 @@ number:
     restore_value: true
     mode: box
     entity_category: config
-    on_value:     
-      - light.turn_on: 
-          id: backlight
-          brightness: !lambda return x / 100;
           
 # Presece for turn on/off the display
 binary_sensor:
