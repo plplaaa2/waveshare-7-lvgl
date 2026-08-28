@@ -1787,16 +1787,7 @@ lvgl:
                                   height: 35
                                   align: RIGHT_MID
                                   id: switch_auto_bright
-                                  on_click:
-                                    - if:
-                                       condition:
-                                         switch.is_off: auto_brightness
-                                       then:
-                                         - switch.turn_on: auto_brightness
-                                         - script.execute: light_up
-                                       else:
-                                         - switch.turn_off: auto_brightness
-                                         - script.execute: light_up
+
                         - obj:
                             width: 95%
                             height: 50
