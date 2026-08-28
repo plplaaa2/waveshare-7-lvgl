@@ -6,7 +6,7 @@ switch:
       - script.execute: hide_weather
       - script.execute:
           id: select_active_button
-          target_idx: 0   # climate_sw = 0번
+          target_idx: 0   
       - lvgl.widget.show: climate_card
     on_turn_off:
       - lvgl.widget.hide: [climate_card, climate_setting_card]
@@ -20,7 +20,7 @@ switch:
       - script.execute: hide_weather
       - script.execute:
           id: select_active_button
-          target_idx: 2   # climate_sw = 0번
+          target_idx: 2   
       - lvgl.widget.show: blind_card
     on_turn_off:
       - lvgl.widget.hide: blind_card
@@ -33,7 +33,7 @@ switch:
       - script.execute: hide_weather
       - script.execute:
           id: select_active_button
-          target_idx: 3   # climate_sw = 0번
+          target_idx: 3   
       - lvgl.widget.show: radio_card
     on_turn_off:
       - lvgl.widget.hide: radio_card
@@ -46,7 +46,7 @@ switch:
       - script.execute: hide_weather
       - script.execute:
           id: select_active_button
-          target_idx: 4   # climate_sw = 0번
+          target_idx: 4   
       - lvgl.widget.show: [energy_card, meter_card]     
     on_turn_off:
       - lvgl.widget.hide: [energy_card, meter_card]      
@@ -59,7 +59,7 @@ switch:
       - script.execute: hide_weather
       - script.execute:
           id: select_active_button
-          target_idx: 6   # climate_sw = 0번
+          target_idx: 6   
       - lvgl.widget.show: setting_card
     on_turn_off:
       - lvgl.widget.hide: setting_card
