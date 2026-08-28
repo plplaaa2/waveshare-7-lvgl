@@ -3,39 +3,36 @@ number:
 # time for return to weather card
   - platform: lvgl
     widget: return_spin
-    name: "${name} Screen Return Time"    
+    name: "Screen Return Time"    
     id: return_timeout
     unit_of_measurement: "s"
-    restore_value: true
+    restore_value: false
     mode: box
+    entity_category: config
+    
 # time for turn off the lcd 
   - platform: lvgl
     widget: idle_spin
-    name: "${name} LCD Screen Timeout"    
+    name: "LCD Screen Timeout"    
     id: screen_timeout
     unit_of_measurement: "s" 
-    restore_value: true    
+    restore_value: false
     mode: box
+    entity_category: config
 
-  - platform: template
-    name: "${name} BackLight Brightness"
-    optimistic: true
+  - platform: lvgl
+    widget: slide_brightness
     id: backlight_brightness
     unit_of_measurement: "%"
-    initial_value: 50
+    #initial_value: 50
     restore_value: true
-    min_value: 5
-    max_value: 100
-    step: 5
     mode: box
-    on_value: 
-      then:
-        - lvgl.slider.update: 
-            id: slide_brightness
-            value: !lambda 'return x;'
-        - light.turn_on: 
-            id: backlight
-            brightness: !lambda return x / 100;
+    entity_category: config
+    on_value:     
+      - light.turn_on: 
+          id: backlight
+          brightness: !lambda return x / 100;
+          
 # Presece for turn on/off the display
 binary_sensor:
   - platform: homeassistant
