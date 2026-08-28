@@ -1,34 +1,15 @@
 switch:
-
   - platform: lvgl
     widget: climate_button
     id: climate_sw
-    on_turn_on:
-      - if:
-          condition:
-            - switch.is_on: blind_sw
-          then:
-            - switch.turn_off: blind_sw
-      - if:
-          condition:
-            - switch.is_on: radio_sw
-          then:
-            - switch.turn_off: radio_sw
-      - if:
-          condition:
-            - switch.is_on: energy_sw
-          then:
-            - switch.turn_off: energy_sw
-      - if:
-          condition:
-            - switch.is_on: setting_sw
-          then:
-            - switch.turn_off: setting_sw
-            
+    on_turn_on:          
       - script.execute: hide_weather
+      - script.execute:
+          id: select_active_button
+          target_idx: 0   # climate_sw = 0번
       - lvgl.widget.show: climate_card
     on_turn_off:
-      - lvgl.widget.hide: climate_card
+      - lvgl.widget.hide: [climate_card, climate_setting_card]
       - script.execute: show_weather
 
 
@@ -36,28 +17,10 @@ switch:
     widget: blind_button
     id: blind_sw
     on_turn_on:
-      - if:
-          condition:
-            - switch.is_on: climate_sw
-          then:
-            - switch.turn_off: climate_sw
-      - if:
-          condition:
-            - switch.is_on: radio_sw
-          then:
-            - switch.turn_off: radio_sw
-      - if:
-          condition:
-            - switch.is_on: energy_sw
-          then:
-            - switch.turn_off: energy_sw
-      - if:
-          condition:
-            - switch.is_on: setting_sw
-          then:
-            - switch.turn_off: setting_sw
-        
       - script.execute: hide_weather
+      - script.execute:
+          id: select_active_button
+          target_idx: 2   # climate_sw = 0번
       - lvgl.widget.show: blind_card
     on_turn_off:
       - lvgl.widget.hide: blind_card
@@ -67,28 +30,10 @@ switch:
     widget: radio_button
     id: radio_sw
     on_turn_on:
-      - if:
-          condition:
-            - switch.is_on: climate_sw
-          then:
-            - switch.turn_off: climate_sw
-      - if:
-          condition:
-            - switch.is_on: blind_sw
-          then:
-            - switch.turn_off: blind_sw
-      - if:
-          condition:
-            - switch.is_on: energy_sw
-          then:
-            - switch.turn_off: energy_sw
-      - if:
-          condition:
-            - switch.is_on: setting_sw
-          then:
-            - switch.turn_off: setting_sw
-            
       - script.execute: hide_weather
+      - script.execute:
+          id: select_active_button
+          target_idx: 3   # climate_sw = 0번
       - lvgl.widget.show: radio_card
     on_turn_off:
       - lvgl.widget.hide: radio_card
@@ -98,59 +43,23 @@ switch:
     widget: energy_button
     id: energy_sw
     on_turn_on:
-      - if:
-          condition:
-            - switch.is_on: climate_sw
-          then:
-            - switch.turn_off: climate_sw
-      - if:
-          condition:
-            - switch.is_on: blind_sw
-          then:
-            - switch.turn_off: blind_sw
-      - if:
-          condition:
-            - switch.is_on: radio_sw
-          then:
-            - switch.turn_off: radio_sw
-      - if:
-          condition:
-            - switch.is_on: setting_sw
-          then:
-            - switch.turn_off: setting_sw
       - script.execute: hide_weather
-      - lvgl.widget.show: energy_card
-      - lvgl.widget.show: meter_card
+      - script.execute:
+          id: select_active_button
+          target_idx: 4   # climate_sw = 0번
+      - lvgl.widget.show: [energy_card, meter_card]     
     on_turn_off:
-      - lvgl.widget.hide: energy_card
-      - lvgl.widget.hide: meter_card
+      - lvgl.widget.hide: [energy_card, meter_card]      
       - script.execute: show_weather  
 
   - platform: lvgl
     widget: setting_button
-    id: setting_sw
+    id: setting_sw    
     on_turn_on:
-      - if:
-          condition:
-            - switch.is_on: climate_sw
-          then:
-            - switch.turn_off: climate_sw
-      - if:
-          condition:
-            - switch.is_on: blind_sw
-          then:
-            - switch.turn_off: blind_sw
-      - if:
-          condition:
-            - switch.is_on: radio_sw
-          then:
-            - switch.turn_off: radio_sw
-      - if:
-          condition:
-            - switch.is_on: energy_sw
-          then:
-            - switch.turn_off: energy_sw
       - script.execute: hide_weather
+      - script.execute:
+          id: select_active_button
+          target_idx: 6   # climate_sw = 0번
       - lvgl.widget.show: setting_card
     on_turn_off:
       - lvgl.widget.hide: setting_card
@@ -420,7 +329,7 @@ lvgl:
                 x: 0
                 align: BOTTOM_LEFT
                 width: 460
-                height: 190
+                height: 185
                 styles: card
                 id: air_quality_card
                 layout: 
@@ -437,18 +346,19 @@ lvgl:
                       height: 170
                       border_width: 0
                       bg_opa: TRANSP
+                      indicator:
+                        bg_opa: transp
                       scales:
                         - range_from: 400
                           range_to: 5000
                           angle_range: 250
-                          ticks:
-                            count: 0
                           indicators:
                             - line:
                                 id: co2_needle
-                                width: 5
+                                width: 8
                                 color: 0xE5E5E5
-                                r_mod: 13
+                                length: 20
+                                radial_offset: 40
                                 value: "0"
                             - arc: 
                                 color: 0x0285D1
@@ -534,6 +444,8 @@ lvgl:
                       height: 170
                       border_width: 0
                       bg_opa: TRANSP
+                      indicator:
+                        bg_opa: transp
                       scales:
                         - range_from: 0
                           range_to: 500
@@ -543,9 +455,10 @@ lvgl:
                           indicators:
                             - line:
                                 id: tvoc_needle
-                                width: 5
+                                width: 8
                                 color: 0xE5E5E5
-                                r_mod: 13
+                                length: 20
+                                radial_offset: 40
                                 value: "0"
                             - arc: 
                                 color: 0x0285D1
@@ -621,6 +534,8 @@ lvgl:
                       height: 170
                       border_width: 0
                       bg_opa: TRANSP
+                      indicator:
+                        bg_opa: transp
                       scales:
                         - range_from: 0
                           range_to: 100
@@ -630,9 +545,10 @@ lvgl:
                           indicators:
                             - line:
                                 id: pm_in_needle
-                                width: 5
+                                width: 8
                                 color: 0xE5E5E5
-                                r_mod: 13
+                                length: 20
+                                radial_offset: 40
                                 value: "0"
                             - arc: 
                                 color: 0x0285D1
@@ -723,7 +639,7 @@ lvgl:
                 y: 0
                 align: TOP_RIGHT
                 width: 233
-                height: 450
+                height: 445
                 styles: card                
                 pad_all: 15
                 id: temp_card
@@ -741,6 +657,8 @@ lvgl:
                       height: 180
                       border_width: 0
                       bg_opa: TRANSP
+                      indicator:
+                        bg_opa: transp
                       align: TOP_MID
                       scales:
                         - range_from: 0
@@ -753,7 +671,8 @@ lvgl:
                                 id: temp_needle
                                 width: 8
                                 color: 0xE5E5E5
-                                r_mod: 18 
+                                length: 20
+                                radial_offset: 55
                                 value: "0"
                             - arc: 
                                 color: 0x005AC7
@@ -818,19 +737,20 @@ lvgl:
                       height: 180
                       border_width: 0
                       bg_opa: TRANSP
+                      indicator:
+                        bg_opa: transp
                       align: BOTTOM_MID
                       scales:
                         - range_from: 0
                           range_to: 100
                           angle_range: 250
-                          ticks:
-                            count: 0
                           indicators:
                             - line:
                                 id: hum_needle
                                 width: 8
                                 color: 0xE5E5E5
-                                r_mod: 18
+                                length: 20
+                                radial_offset: 55
                                 value: "0"
                             - arc: 
                                 color: 0xB3DEFC
@@ -894,7 +814,7 @@ lvgl:
                 x: 0
                 y: 0
                 width: 460
-                height: 450
+                height: 445
                 styles: card
                 id: climate_card
                 hidden: true
@@ -1154,7 +1074,7 @@ lvgl:
                 x: 0
                 y: 0
                 width: 696
-                height: 450
+                height: 445
                 styles: card
                 id: blind_card
                 hidden: true
@@ -1290,7 +1210,7 @@ lvgl:
                 x: 0
                 y: 0
                 width: 696
-                height: 450
+                height: 445
                 styles: card
                 id: radio_card
                 hidden: true
@@ -1491,7 +1411,7 @@ lvgl:
                 x: 0
                 y: 0
                 width: 460
-                height: 450
+                height: 445
                 styles: card
                 id: energy_card
                 hidden: true
@@ -1611,7 +1531,7 @@ lvgl:
                 y: 0
                 align: TOP_RIGHT
                 width: 233
-                height: 450
+                height: 445
                 styles: card
                 hidden: true
                 pad_all: 15
@@ -1630,20 +1550,21 @@ lvgl:
                       height: 180
                       border_width: 0
                       bg_opa: TRANSP
+                      indicator:
+                        bg_opa: transp
                       align: TOP_MID
                       scales:
                       # Now Grid consum
                         - range_from: 0
                           range_to: 40000
                           angle_range: 250
-                          ticks:
-                            count: 0
                           indicators:
                             - line:
                                 id: grid_needle
                                 width: 8
                                 color: 0xE5E5E5
-                                r_mod: 18
+                                length: 20
+                                radial_offset: 55
                                 value: "0"
                             - arc: 
                                 color: 0x005AC7
@@ -1716,19 +1637,20 @@ lvgl:
                       height: 180
                       border_width: 0
                       bg_opa: TRANSP
+                      indicator:
+                        bg_opa: transp
                       align: BOTTOM_MID
                       scales:
                         - range_from: 0
                           range_to: 8000
                           angle_range: 250
-                          ticks:
-                            count: 0
                           indicators:
                              - line:
                                  id: monthly_needle
                                  width: 8
                                  color: 0xE5E5E5
-                                 r_mod: 18 
+                                 length: 20
+                                 radial_offset: 55
                                  value: "0"
                              - arc: 
                                  color: 0x005AC7
@@ -1796,226 +1718,207 @@ lvgl:
                 x: 0
                 y: 0
                 width: 696
-                height: 450
+                height: 445
                 styles: card
                 id: setting_card
                 hidden: true
                 pad_all: 10
                 widgets:
-                  - tabview:
-                      id: setting_tab
-                      position: bottom
-                      styles: card
-                      radius: 20
-                      tab_style:
-                        styles: tab_style
-                        items:
-                          text_color: 0xE5E5E5
-                          height: 100%
-                          pressed:
-                            text_color: 0xE5E5E5
-                          checked: 
-                            text_color: 0xE5E5E5
-                      tabs:
-                        - name: "Display"
-                          id: display_tab
-                          widgets:
-                            - label:
-                                align: TOP_RIGHT
-                                text: "Display"
-                                text_align: RIGHT
-                                text_font: regular_40
-                            - obj:
-                                width: 30%
-                                height: 85%
-                                align: bottom_left
-                                styles: base_style
-                                pad_top: 20
-                                layout: 
-                                  type: flex
-                                  flex_flow: column
-                                  flex_align_main: START
-                                  flex_align_cross: START
-                                  flex_align_track : SPACE_EVENLY
-                                widgets:
-                                  - label:
-                                      width: 95%
-                                      height: 50
-                                      text: "Auto Brightness"
-                                      text_font: regular_25
-                                  - label:
-                                      width: 95%
-                                      height: 50
-                                      text: "Brightness"
-                                      text_font: regular_25
-                                  - label:
-                                      width: 95%
-                                      height: 50
-                                      text: "Return Home(S)"
-                                      text_font: regular_25
-                                  - label:
-                                      width: 95%
-                                      height: 50
-                                      text: "Screen Off(S)"
-                                      text_font: regular_25
+                  - label:
+                      x: -10
+                      y: 10
+                      align: TOP_RIGHT
+                      text: "Display"
+                      text_align: RIGHT
+                      text_font: regular_40
+                  - obj:
+                      width: 30%
+                      height: 80%
+                      align: bottom_left
+                      styles: base_style
+                      pad_top: 10
+                      layout: 
+                        type: flex
+                        flex_flow: column
+                        flex_align_main: START
+                        flex_align_cross: START
+                        flex_align_track : SPACE_EVENLY
+                      widgets:
+                        - label:
+                            width: 95%
+                            height: 50
+                            text: "Auto Brightness"
+                            text_font: regular_25
+                        - label:
+                            width: 95%
+                            height: 50
+                            text: "Brightness"
+                            text_font: regular_25
+                        - label:
+                            width: 95%
+                            height: 50
+                            text: "Return Home(S))"
+                            text_font: regular_25
+                        - label:
+                            width: 95%
+                            height: 50
+                            text: "Screen Off(S)"
+                            text_font: regular_25
                                 
-                            - obj:
-                                width: 70%
-                                height: 85%
-                                align: bottom_right
-                                styles: base_style
-                                pad_top: 10
-                                layout: 
-                                  type: flex
-                                  flex_flow: column
-                                  flex_align_main: START
-                                  flex_align_cross: END
-                                  flex_align_track : SPACE_EVENLY
-                                widgets:
-                                  - obj:
-                                      width: 95%
-                                      height: 50
-                                      styles: base_style
-                                      widgets:
-                                        - switch:
-                                            width: 70
-                                            height: 35
-                                            align: RIGHT_MID
-                                            id: switch_auto_bright
-                                            on_click:
-                                              - if:
-                                                  condition:
-                                                    switch.is_off: auto_brightness
-                                                  then:
-                                                    switch.turn_on: auto_brightness
-                                                  else:
-                                                    switch.turn_off: auto_brightness
-                                  - obj:
-                                      width: 95%
-                                      height: 50
-                                      styles: base_style
-                                      widgets:
-                                        - label:
-                                            text: "0"
-                                            align: LEFT_MID
-                                            text_font: regular_25
-                                        - slider:
-                                            id: slide_brightness
-                                            width: 75%
-                                            height: 20
-                                            align: CENTER
-                                            value: !lambda return id(backlight_brightness).state;
-                                            pad_all: 2
-                                            min_value: 5
-                                            max_value: 100
-                                            indicator:
-                                              bg_color: 0x003866
-                                              bg_grad_color: 0x4adeff
-                                              bg_grad_dir: HOR
-                                              bg_opa: COVER
-                                              height: 20
-                                            on_release:
-                                              then:
-                                                - number.set:
-                                                    id: backlight_brightness
-                                                    value: !lambda return x;
-                                        - label:
-                                            text: "100"
-                                            align: RIGHT_MID
-                                            text_font: regular_25
-                                  - obj:
-                                      align: TOP_RIGHT
-                                      width: 95%
-                                      height: 50
-                                      styles: base_style
-                                      text_font: regular_25
-                                      layout:
-                                        type: FLEX
-                                        flex_flow: ROW
-                                        flex_align_main: END
-                                        flex_align_cross: CENTER
-                                      widgets:                           
-                                        - button:
-                                            height: 45
-                                            width: 45
-                                            styles: menu_button
-                                            on_click:
-                                              - lvgl.spinbox.decrement: return_spin
-                                            widgets:
-                                              - label:
-                                                  text: "-"
-                                                  align: CENTER
-                                        - spinbox:
-                                            width: 80
-                                            height: 45
-                                            id: return_spin
-                                            text_font: regular_20
-                                            text_align: CENTER
-                                            range_from: 10
-                                            range_to: 300
-                                            step: 5
-                                            value: 30
-                                            rollover: false                                
-                                            digits: 3
-                                            decimal_places: 0                                
+                  - obj:
+                      width: 70%
+                      height: 80%
+                      align: bottom_right
+                      styles: base_style
+                      layout: 
+                        type: flex
+                        flex_flow: column
+                        flex_align_main: START
+                        flex_align_cross: END
+                        flex_align_track : SPACE_EVENLY
+                      widgets:
+                        - obj:
+                            width: 95%
+                            height: 50
+                            styles: base_style
+                            widgets:
+                              - switch:
+                                  width: 70
+                                  height: 35
+                                  align: RIGHT_MID
+                                  id: switch_auto_bright
+                                  on_click:
+                                    - if:
+                                       condition:
+                                         switch.is_off: auto_brightness
+                                       then:
+                                         - switch.turn_on: auto_brightness
+                                         - script.execute: light_up
+                                       else:
+                                         - switch.turn_off: auto_brightness
+                                         - script.execute: light_up
+                        - obj:
+                            width: 95%
+                            height: 50
+                            styles: base_style
+                            widgets:
+                              - label:
+                                  text: "0"
+                                  align: LEFT_MID
+                                  text_font: regular_25
+                              - slider:
+                                  id: slide_brightness
+                                  width: 75%
+                                  height: 20
+                                  align: CENTER
+                                  value: 30
+                                  pad_all: 2
+                                  min_value: 5
+                                  max_value: 100
+                                  indicator:
+                                    bg_color: 0x003866
+                                    bg_grad_color: 0x4adeff
+                                    bg_grad_dir: HOR
+                                    bg_opa: COVER
+                                    height: 20
+
+                              - label:
+                                  text: "100"
+                                  align: RIGHT_MID
+                                  text_font: regular_25
+                        - obj:
+                            align: TOP_RIGHT
+                            width: 95%
+                            height: 50
+                            styles: base_style
+                            text_font: regular_25
+                            layout:
+                              type: FLEX
+                              flex_flow: ROW
+                              flex_align_main: END
+                              flex_align_cross: CENTER
+                            widgets:                           
+                              - button:
+                                  height: 45
+                                  width: 45
+                                  styles: menu_button
+                                  on_click:
+                                    - lvgl.spinbox.decrement: return_spin
+                                  widgets:
+                                    - label:
+                                        text: "-"
+                                        align: CENTER
+                              - spinbox:
+                                  width: 80
+                                  height: 45
+                                  id: return_spin
+                                  text_font: regular_20
+                                  text_align: CENTER
+                                  range_from: 10
+                                  range_to: 300
+                                  selected_digit : 1
+                                  value: 30
+                                  rollover: false                                
+                                  digits: 3
+                                  decimal_places: 0
   
-                                        - button:
-                                            height: 45
-                                            width: 45
-                                            styles: menu_button
-                                            on_click:
-                                              - lvgl.spinbox.increment: return_spin
-                                            widgets:
-                                              - label:
-                                                  text: "+"
-                                                  align: CENTER
+                              - button:
+                                  height: 45
+                                  width: 45
+                                  styles: menu_button
+                                  on_click:
+                                    - lvgl.spinbox.increment: return_spin
+                                  widgets:
+                                    - label:
+                                        text: "+"
+                                        align: CENTER
                                   
 
-                                  - obj:
-                                      align: TOP_RIGHT
-                                      width: 95%
-                                      height: 50
-                                      styles: base_style
-                                      text_font: regular_25
-                                      layout:
-                                        type: FLEX
-                                        flex_flow: ROW
-                                        flex_align_main: END
-                                      widgets:                           
-                                        - button:
-                                            height: 45
-                                            width: 45
-                                            styles: menu_button
-                                            on_click:
-                                              - lvgl.spinbox.decrement: idle_spin
-                                            widgets:
-                                              - label:
-                                                  text: "-"
-                                                  align: CENTER
-                                        - spinbox:
-                                            width: 80
-                                            height: 45
-                                            id: idle_spin                                            
-                                            text_align: CENTER
-                                            text_font: regular_20
-                                            range_from: 10
-                                            range_to: 300
-                                            step: 5
-                                            value: 120
-                                            rollover: false                                
-                                            digits: 3
-                                            decimal_places: 0                                
+                        - obj:
+                            align: TOP_RIGHT
+                            width: 95%
+                            height: 50
+                            styles: base_style
+                            text_font: regular_25
+                            layout:
+                              type: FLEX
+                              flex_flow: ROW
+                              flex_align_main: END
+                            widgets:                           
+                              - button:
+                                  height: 45
+                                  width: 45
+                                  styles: menu_button
+                                  on_click:
+                                    - lvgl.spinbox.decrement: idle_spin
+                                  widgets:
+                                    - label:
+                                        text: "-"
+                                        align: CENTER
+                              - spinbox:
+                                  width: 80
+                                  height: 45
+                                  id: idle_spin
+                                  text_align: CENTER
+                                  text_font: regular_20
+                                  range_from: 10
+                                  range_to: 300
+                                  selected_digit : 1
+                                  value: 120
+                                  rollover: false                                
+                                  digits: 3
+                                  decimal_places: 0
       
-                                        - button:
-                                            height: 45
-                                            width: 45
-                                            styles: menu_button
-                                            on_click:
-                                              - lvgl.spinbox.increment: idle_spin
-                                            widgets:
-                                              - label:
-                                                  text: "+"
-                                                  align: CENTER
+                              - button:
+                                  height: 45
+                                  width: 45
+                                  styles: menu_button
+                                  on_click:
+                                    - lvgl.spinbox.increment: idle_spin
+                                  widgets:
+                                    - label:
+                                        text: "+"
+                                        align: CENTER
 
                   - button:
                       x: 10
