@@ -1,38 +1,10 @@
 display:
   - platform: rpi_dpi_rgb
     id: my_display    
-    color_order: RGB
-    invert_colors: True
+    model: ESP32-8048S070
+    auto_clear_enabled: false
     update_interval: never
-    auto_clear_enabled: false # takes 2.8 seconds to clear the display
-    dimensions:
-      width: 800
-      height: 480
-    de_pin: 41
-    hsync_pin: 39
-    vsync_pin: 40
-    pclk_pin: 42
-    pclk_frequency: 12MHz
-    data_pins:
-      red:
-        - 14        #r1
-        - 21        #r2
-        - 47        #r3
-        - 48        #r4
-        - 45        #r5
-      green:
-        - 9         #g0
-        - 46         #g1
-        - 3         #g2
-        - 8        #g3
-        - 16        #g4
-        - 1         #g5
-      blue:
-        - 15         #b1
-        - 7         #b2
-        - 6        #b3
-        - 5         #b4
-        - 4         #b5
+    color_order: RGB
 i2c:
   scl: GPIO20
   sda: GPIO19
@@ -41,11 +13,12 @@ i2c:
 # 터치 스크린 설정
 touchscreen:
   platform: gt911
+  id: my_touchscreen
+  display: my_display
+  reset_pin: GPIO38  # <--- 리셋 핀 추가
   transform:
     mirror_x: false
     mirror_y: false
-  id: my_touchscreen
-  display: my_display
   on_touch:
     - lambda: |-
         if (!id(backlight).remote_values.is_on()) {
@@ -75,25 +48,15 @@ output:
     zero_means_zero: True        
 
 switch:
-  - platform: template
-    id: auto_brightness
-    name: ${name} Auto Brightness
+  - platform: lvgl
+    widget: switch_auto_bright
+    id: auto_brightness    
+    name: "Auto Brightness"
     icon: mdi:brightness-auto
     restore_mode: RESTORE_DEFAULT_OFF
-    optimistic: true
     turn_on_action:
-      - lvgl.widget.update:
-          id: switch_auto_bright
-          state:
-            checked: true
-      - delay: 300ms
       - script.execute: light_up
     turn_off_action:
-      - lvgl.widget.update:
-          id: switch_auto_bright
-          state:
-            checked: false
-      - delay: 300ms
       - script.execute: light_up
       
 script:    
