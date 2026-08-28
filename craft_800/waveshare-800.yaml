@@ -52,7 +52,7 @@ output:
 switch:
   - platform: template
     id: auto_brightness
-    name: ${name} Auto Brightness
+    name: "Auto Brightness"
     icon: mdi:brightness-auto
     restore_mode: RESTORE_DEFAULT_OFF
     optimistic: true
